@@ -15,8 +15,8 @@ import static org.assertj.core.api.Assertions.*;
 public class KongServiceServiceTest {
 
     private KongServiceService kongServiceService;
-    private String name = "test_service";
-    private String name2 = "test_service_2";
+    private String service = "test_service";
+    private String service2 = "test_service_2";
     private String host = "localhost";
     private Service init = Service.INIT;
 
@@ -28,18 +28,18 @@ public class KongServiceServiceTest {
     @Before
     public void before() throws Exception {
         kongServiceService = new KongServiceService();
-        Whitebox.setInternalState(kongServiceService, "adminUrl", "http://192.168.1.12:7001");
-        init.setName(name);
+        Whitebox.setInternalState(kongServiceService, "adminUrl", "http://192.168.1.12:8001");
+        init.setName(service);
         // 初始化，先清空
-        kongServiceService.delete(name);
-        kongServiceService.delete(name2);
+        kongServiceService.delete(service);
+        kongServiceService.delete(service2);
     }
 
     @After
     public void after() throws Exception {
         // 删除
-        kongServiceService.delete(name);
-        kongServiceService.delete(name2);
+        kongServiceService.delete(service);
+        kongServiceService.delete(service2);
     }
 
     @AfterClass
@@ -50,43 +50,44 @@ public class KongServiceServiceTest {
     @Test
     public void testMain() throws Exception {
         System.out.println("添加");
-        Service service = Service.INIT;
-        service.setName(name);
-        RestResponse response = kongServiceService.add(service);
+        RestResponse response = kongServiceService.add(init);
         assertThat(response.getCode()).isEqualTo(201);
         Service parse = JsonUtils.parse(response.getResponse(), Service.class);
-        assertThat(parse.getName()).isEqualTo(name);
+        assertThat(parse.getName()).isEqualTo(service);
         System.out.println(parse);
 
         System.out.println("再添加，报错：已存在");
-        response = kongServiceService.add(service);
+        response = kongServiceService.add(init);
         assertThat(response.getCode()).isEqualTo(409);
         ErrorMsg errorMsg = JsonUtils.parse(response.getResponse(), ErrorMsg.class);
         assertThat(errorMsg.getName()).isEqualTo("unique constraint violation");
+        assertThat(errorMsg.getCode()).isEqualTo(5);
         System.out.println(errorMsg);
 
         System.out.println("修改");
-        service.setName(name2);
-        service.setHost(host);
-        response = kongServiceService.update(name, service);
+        init.setName(service2);
+        init.setHost(host);
+        response = kongServiceService.update(service, init);
         assertThat(response.getCode()).isEqualTo(200);
         parse = JsonUtils.parse(response.getResponse(), Service.class);
-        assertThat(parse.getName()).isEqualTo(name2);
+        assertThat(parse.getName()).isEqualTo(service2);
         assertThat(parse.getHost()).isEqualTo(host);
         System.out.println(parse);
 
         System.out.println("再修改，报错：不存在");
-        response = kongServiceService.update(name, service);
+        response = kongServiceService.update(service, init);
         assertThat(response.getCode()).isEqualTo(404);
         errorMsg = JsonUtils.parse(response.getResponse(), ErrorMsg.class);
         assertThat(errorMsg.getName()).isEqualTo("not found");
+        assertThat(errorMsg.getCode()).isEqualTo(6);
         System.out.println(errorMsg);
 
         System.out.println("修改不存在的，使用put，自动创建");
-        response = kongServiceService.put(name, service);
+        // init中name被忽略
+        response = kongServiceService.put(service, init);
         assertThat(response.getCode()).isEqualTo(200);
         parse = JsonUtils.parse(response.getResponse(), Service.class);
-        assertThat(parse.getName()).isEqualTo(name);
+        assertThat(parse.getName()).isEqualTo(service);
         assertThat(parse.getHost()).isEqualTo(host);
         System.out.println(parse);
 
@@ -98,10 +99,10 @@ public class KongServiceServiceTest {
         System.out.println(list);
 
         System.out.println("查询单个");
-        response = kongServiceService.get(name);
+        response = kongServiceService.get(service);
         assertThat(response.getCode()).isEqualTo(200);
         parse = JsonUtils.parse(response.getResponse(), Service.class);
-        assertThat(parse.getName()).isEqualTo(name);
+        assertThat(parse.getName()).isEqualTo(service);
         System.out.println(parse);
     }
 
