@@ -95,7 +95,6 @@ public class KongServiceServiceTest {
         response = kongServiceService.list();
         assertThat(response.getCode()).isEqualTo(200);
         Services list = JsonUtils.parse(response.getResponse(), Services.class);
-        assertThat(list.getData().size()).isEqualTo(2);
         System.out.println(list);
 
         System.out.println("查询单个");

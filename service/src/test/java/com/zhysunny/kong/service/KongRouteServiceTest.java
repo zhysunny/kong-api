@@ -108,7 +108,6 @@ public class KongRouteServiceTest {
         response = kongRouteService.list();
         assertThat(response.getCode()).isEqualTo(200);
         Routes list = JsonUtils.parse(response.getResponse(), Routes.class);
-        assertThat(list.getData().size()).isEqualTo(2);
         System.out.println(list);
 
         System.out.println("查询service下所有");
