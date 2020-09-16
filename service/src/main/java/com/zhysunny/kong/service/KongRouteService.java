@@ -5,13 +5,14 @@ import com.zhysunny.rest.client.HttpClientUtils;
 import com.zhysunny.rest.client.RestResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
 
 /**
  * @author zhysunny
  * @date 2020/8/26 23:08
  */
 @Slf4j
-@org.springframework.stereotype.Service
+@Service
 public class KongRouteService {
 
     @Value("kong.admin.baseurl")

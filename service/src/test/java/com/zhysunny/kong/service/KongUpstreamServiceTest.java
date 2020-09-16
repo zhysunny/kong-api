@@ -8,7 +8,7 @@ import org.powermock.reflect.Whitebox;
 import static org.assertj.core.api.Assertions.*;
 
 /**
- * KongServiceService Test
+ * KongUpstreamService Test
  */
 public class KongUpstreamServiceTest {
 
